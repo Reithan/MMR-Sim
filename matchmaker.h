@@ -10,8 +10,10 @@ public:
 	virtual ~matchmaker();
 
 	virtual std::unique_ptr<match> FormMatch()		= 0;
-	virtual bool QueuePlayer(player* new_player)	= 0;
-	virtual bool DropPlayer(player* del_player)		= 0;
+	virtual bool QueuePlayer(const player* new_player)	= 0;
+	virtual bool DropPlayer(const player* del_player = nullptr)		= 0;
 	virtual void ReportMatch(const match* match_ended, const unsigned short winner) = 0;
+
+	size_t NumQueued() { return queued_players.size(); }
 };
 

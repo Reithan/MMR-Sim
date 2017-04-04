@@ -13,17 +13,17 @@ elomatchmaker::~elomatchmaker()
 
 std::unique_ptr<match> elomatchmaker::FormMatch()
 {
-
+	return nullptr;
 }
 
-bool elomatchmaker::QueuePlayer(player* new_player)
+bool elomatchmaker::QueuePlayer(const player* new_player)
 {
-
+	return false;
 }
 
-bool elomatchmaker::DropPlayer(player* del_player)
+bool elomatchmaker::DropPlayer(const player* del_player)
 {
-
+	return false;
 }
 
 void elomatchmaker::ReportMatch(const match* match_ended, const unsigned short winner)

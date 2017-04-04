@@ -12,5 +12,7 @@ class team
 public:
 	team();
 	~team();
+
+	const player* GetPlayer(const size_t player_num) const { return character[player_num]->GetPlayer(); }
 };
 

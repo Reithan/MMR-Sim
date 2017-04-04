@@ -28,5 +28,7 @@ class character
 public:
 	character(const player* my_player, const RPSStat counter, const float lvf_balance, const Role role, const float synergy);
 	~character();
+
+	const player* GetPlayer() { return mPlayer; }
 };
 

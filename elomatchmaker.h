@@ -8,8 +8,8 @@ public:
 	virtual ~elomatchmaker();
 
 	virtual std::unique_ptr<match> FormMatch();
-	virtual bool QueuePlayer(player* new_player);
-	virtual bool DropPlayer(player* del_player);
+	virtual bool QueuePlayer(const player* new_player);
+	virtual bool DropPlayer(const player* del_player);
 	virtual void ReportMatch(const match* match_ended, const unsigned short winner);
 };
 

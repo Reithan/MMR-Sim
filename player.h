@@ -7,7 +7,9 @@ class player
 	float irritability;
 	float tilt;
 public:
-	player();
+	player(float skill, std::vector<float> role_skills, float irritability, float tilt);
 	~player();
+
+	const float GetTilt() const { return tilt; }
 };
 

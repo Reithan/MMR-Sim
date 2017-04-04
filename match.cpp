@@ -28,4 +28,6 @@ bool match::Update()
 	default:
 		break;
 	}
+
+	return false;
 }
