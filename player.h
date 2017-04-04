@@ -14,6 +14,8 @@ public:
 
 	const float GetTilt() const { return tilt; }
 	const float GetRating() const { return rating; }
+
 	void UpdateRating(float delta) { rating += delta; }
+	void UpdateTilt(float raw_delta) { tilt += raw_delta * irritability; }
 };
 

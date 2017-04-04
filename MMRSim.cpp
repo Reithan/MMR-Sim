@@ -15,10 +15,10 @@ int main()
 	if (player_db.is_open())
 	{
 		unsigned short count;
-		player_db >> count;
+		player_db.read((char*)&count,sizeof(unsigned short));
 		for (size_t iplayer = 0; iplayer < count; ++iplayer)
 		{
-			all_players.emplace_back();
+			all_players.emplace_back(new player);
 			player_db.read((char*)all_players.back().get(), sizeof(player));
 		}
 		player_db.close();
@@ -28,7 +28,8 @@ int main()
 		player_db.open("PlayerData.dat", std::ios::binary | std::ios::out);
 		if (player_db.is_open())
 		{
-			player_db << unsigned short(1000);
+			unsigned short count = 1000;
+			player_db.write((char*)&count, sizeof(unsigned short));
 			for (size_t iplayer = 0; iplayer < 1000; ++iplayer)
 			{
 				std::vector<float> role_skills(Role::NUM_ROLES);
@@ -56,12 +57,15 @@ int main()
 		// add/remove players from queue
 		while (mm_queue->NumQueued() < 100 || std::rand() % 10 == 0)
 		{
+			// TODO: Can re-queue duplicate players
 			mm_queue->QueuePlayer(all_players[std::rand() % all_players.size()].get());
 		}
 		if (rand() % 10 == 0)
 			mm_queue->DropPlayer();
 		// use matchmaker to attempt to form matches
-		live_matches.push_back(mm_queue->FormMatch());
+		auto new_match = mm_queue->FormMatch();
+		if(nullptr != new_match)
+			live_matches.push_back(std::move(new_match));
 		// run sim-step for currently running matches
 		for (auto imatch = live_matches.begin(); imatch != live_matches.end(); ++imatch)
 		{

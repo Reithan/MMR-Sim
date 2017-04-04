@@ -6,7 +6,7 @@ class match
 	std::unique_ptr<team>	teams[2];
 	float team_vision[2];
 
-	enum PermObjective : unsigned short
+	enum Objective : unsigned short
 	{
 		// permanent objs
 		TIER_ONE_TOWER,
@@ -33,6 +33,9 @@ class match
 		NUM_PHASES
 	};
 	MatchPhase current_phase;
+	short draft_pick;
+
+	bool Pick();
 public:
 	match();
 	~match();
@@ -42,5 +45,6 @@ public:
 
 	team* GetTeam(const size_t team_num) { return teams[team_num].get(); }
 	player* GetPlayer(const size_t team_num, const size_t player_num) { return teams[team_num]->GetPlayer(player_num); }
+	character* GetCharacter(const size_t team_num, const size_t player_num) { return teams[team_num]->GetCharacter(player_num); }
 };
 

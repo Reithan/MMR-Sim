@@ -32,6 +32,8 @@ std::unique_ptr<match> matchmaker::FormMatch()
 	if (pending_match->GetTeam(0)->AddPlayer(*iplayer))
 	{
 		iplayer = queued_players.erase(iplayer);
+		if (iplayer == queued_players.end())
+			iplayer = queued_players.begin();
 	}
 	else
 	{
@@ -42,7 +44,7 @@ std::unique_ptr<match> matchmaker::FormMatch()
 	size_t loop = 0;
 	float window = 100.f;
 
-	for (; num_players[0] + num_players[1] < 10; ++iplayer)
+	for (; num_players[0] + num_players[1] < 10;)
 	{
 		size_t next_team = 1;
 		if (num_players[0] == num_players[1])
@@ -61,7 +63,9 @@ std::unique_ptr<match> matchmaker::FormMatch()
 				window += 50.f;
 				iplayer = queued_players.begin();
 			}
-			if (abs((*iplayer)->GetRating() - pending_match->GetTeam(next_team)->GetAvgRating()) <= window &&
+			float avg_rating = pending_match->GetTeam(next_team)->GetAvgRating();
+			if ((abs((*iplayer)->GetRating() - avg_rating) <= window ||
+					isnan(avg_rating)) &&
 				pending_match->GetTeam(next_team)->AddPlayer(*iplayer))
 			{
 				++num_players[next_team];

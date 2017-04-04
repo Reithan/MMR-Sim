@@ -5,8 +5,7 @@ class player;
 
 class character
 {
-	player* const mPlayer;
-
+public:
 	enum RPSStat : unsigned short
 	{
 		ROCK,
@@ -16,10 +15,13 @@ class character
 
 		NUM_RPS_STATS
 	};
-	const RPSStat counter;
-	const float lvf_balance;
-	const Role role;
-	const float synergy;
+private:
+	player* const mPlayer;
+
+	RPSStat counter;
+	float lvf_balance;
+	Role role;
+	float synergy;
 
 	float level;
 	float farm;
@@ -30,5 +32,9 @@ public:
 	~character();
 
 	player* GetPlayer() { return mPlayer; }
+	RPSStat GetRPS() const { return counter; }
+	Role GetRole() const { return role; }
+
+	void Pick(RPSStat rps, float lvf, Role lane) { counter = rps; lvf_balance = lvf; role = lane; }
 };
 
