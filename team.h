@@ -17,5 +17,6 @@ public:
 	player* GetPlayer(const size_t player_num) { if (characters[player_num] == nullptr) return nullptr;  return characters[player_num]->GetPlayer(); }
 	character* GetCharacter(const size_t player_num) { return characters[player_num].get(); }
 	const float GetAvgRating() const;
+	void SortByRole();
 };
 

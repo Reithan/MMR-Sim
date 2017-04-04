@@ -27,6 +27,8 @@ private:
 	float farm;
 	unsigned short kda[3];
 	short streak;
+	float lane_favor;
+	float team_favor;
 public:
 	character(player* const my_player);
 	~character();
@@ -36,5 +38,8 @@ public:
 	Role GetRole() const { return role; }
 
 	void Pick(RPSStat rps, float lvf, Role lane) { counter = rps; lvf_balance = lvf; role = lane; }
+	void Disconnect() { role = Role::DISCONNECTED; }
+	void SetFavor(float new_lane_favor, float new_team_favor) { lane_favor = new_lane_favor; team_favor = new_team_favor; }
 };
 
+short Counter(character* left, character* right);

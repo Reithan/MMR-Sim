@@ -38,3 +38,12 @@ const float team::GetAvgRating() const
 	}
 	return total / num_players;
 }
+
+void team::SortByRole()
+{
+	std::sort(&characters[0], &characters[5], [](std::unique_ptr<character>& left, std::unique_ptr<character>& right)->bool
+		{
+			return left->GetRole() < right->GetRole();
+		}
+	);
+}

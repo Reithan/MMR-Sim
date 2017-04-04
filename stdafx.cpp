@@ -6,7 +6,7 @@
 
 // TODO: reference any additional headers you need in STDAFX.H
 // and not in this file
-float MultiRand(float min, float max, size_t multi = 1)
+float MultiRand(float min, float max, size_t multi)
 {
 	float total = 0.f;
 	for (size_t i = 0; i < multi; i++)

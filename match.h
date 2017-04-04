@@ -46,5 +46,6 @@ public:
 	team* GetTeam(const size_t team_num) { return teams[team_num].get(); }
 	player* GetPlayer(const size_t team_num, const size_t player_num) { return teams[team_num]->GetPlayer(player_num); }
 	character* GetCharacter(const size_t team_num, const size_t player_num) { return teams[team_num]->GetCharacter(player_num); }
+	void CalculateFavor();
 };
 

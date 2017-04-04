@@ -32,10 +32,12 @@ namespace events
 		for (size_t iplayer = 0; iplayer < 5; ++iplayer)
 		{
 			auto char_ptr = actor_team->GetCharacter(iplayer);
+			if (char_ptr->GetRole() == Role::DISCONNECTED)
+				continue;
 			if (actor == char_ptr)
-				char_ptr->GetPlayer()->UpdateTilt((rand() % 50) / 1000.f);
+				char_ptr->GetPlayer()->UpdateTilt(MultiRand(0.f,0.05f));
 			else
-				char_ptr->GetPlayer()->UpdateTilt((rand() % 200 - 50) / 1000.f);
+				char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.05f, 0.15f, 2));
 		}
 	}
 	void Troll(character* actor, team* actor_team, team* opp_team)
@@ -43,23 +45,45 @@ namespace events
 		for (size_t iplayer = 0; iplayer < 5; ++iplayer)
 		{
 			auto char_ptr = actor_team->GetCharacter(iplayer);
+			if (char_ptr->GetRole() == Role::DISCONNECTED)
+				continue;
 			if (actor == char_ptr)
-				char_ptr->GetPlayer()->UpdateTilt((rand() % 200 - 100) / 1000.f);
+				char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.1f, 0.1f, 2));
 			else
-				char_ptr->GetPlayer()->UpdateTilt((rand() % 50 - 200) / 1000.f);
+				char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.15f, 0.05f));
 		}
 	}
 	void Leave(character* actor, team* actor_team, team* opp_team)
-	{}
+	{
+		actor->GetPlayer()->UpdateTilt(MultiRand(-0.05f, 0.05f));
+		actor->Disconnect();
+
+		for (size_t iplayer = 0; iplayer < 5; ++iplayer)
+		{
+			auto char_ptr = actor_team->GetCharacter(iplayer);
+			if (char_ptr->GetRole() == Role::DISCONNECTED)
+				continue;
+			char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.1f, 0.f));
+
+			char_ptr = opp_team->GetCharacter(iplayer);
+			if (char_ptr->GetRole() == Role::DISCONNECTED)
+				continue;
+			char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.1f, 0.05f, 2));
+		}
+	}
 	void ShitTalk(character* actor, team* actor_team, team* opp_team)
 	{
 		for (size_t iplayer = 0; iplayer < 5; ++iplayer)
 		{
 			auto char_ptr = actor_team->GetCharacter(iplayer);
-			char_ptr->GetPlayer()->UpdateTilt((rand() % 150 - 50) / 1000.f);
+			if (char_ptr->GetRole() == Role::DISCONNECTED)
+				continue;
+			char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.05f, 0.1f));
 
 			char_ptr = opp_team->GetCharacter(iplayer);
-			char_ptr->GetPlayer()->UpdateTilt((rand() % 50 - 200) / 1000.f);
+			if (char_ptr->GetRole() == Role::DISCONNECTED)
+				continue;
+			char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.15f, 0.05f, 2));
 		}
 	}
 

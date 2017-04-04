@@ -7,5 +7,7 @@ enum Role : unsigned short
 	CARRY,
 	SUPPORT,
 
-	NUM_ROLES
+	NUM_ROLES,
+
+	DISCONNECTED
 };

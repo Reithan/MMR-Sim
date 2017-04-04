@@ -21,4 +21,4 @@
 #include <math.h>
 
 // TODO: reference additional headers your program requires here
-float MultiRand(float min, float max, size_t multi);
+float MultiRand(float min, float max, size_t multi = 1);

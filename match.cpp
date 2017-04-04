@@ -96,9 +96,9 @@ bool match::Pick()
 			// check for DC based on counter
 			if (rand() % 100 < 5)
 			{
-				for (size_t i = 0; i < 10; i++)
+				for (size_t i = 0; i < 5; i++)
 				{
-					teams[i / 5]->GetCharacter(i % 5)->GetPlayer()->UpdateTilt(0.25f);
+					teams[1 - good_team]->GetCharacter(i)->GetPlayer()->UpdateTilt(0.25f);
 				}
 				return false;
 			}
@@ -159,10 +159,12 @@ bool match::Update()
 		if (!Pick() || !Pick())
 			return false;
 		if (draft_pick >= 10)
+		{
 			current_phase = match::EARLY;
+			CalculateFavor();
+		}
 		break;
 	case match::EARLY:
-		return false;
 		break;
 	case match::MID:
 		break;
@@ -173,4 +175,32 @@ bool match::Update()
 	if (objectiveUp[Objective::CORE][0] + objectiveUp[Objective::CORE][1] < 2)
 		return false;
 	return true;
+}
+
+void match::CalculateFavor()
+{
+	teams[0]->SortByRole();
+	teams[1]->SortByRole();
+	for (size_t ichar1 = 0; ichar1 < 5; ++ichar1)
+	{
+		float lane_favor = 0.f,
+			team_favor = 0.f;
+		if (ichar1 < 3)
+		{
+			lane_favor += 0.2f * Counter(teams[0]->GetCharacter(ichar1), teams[1]->GetCharacter(ichar1));
+		}
+		else
+		{
+			lane_favor += 0.1f * Counter(teams[0]->GetCharacter(3), teams[1]->GetCharacter(3));
+			lane_favor += 0.1f * Counter(teams[0]->GetCharacter(3), teams[1]->GetCharacter(4));
+			lane_favor += 0.1f * Counter(teams[0]->GetCharacter(4), teams[1]->GetCharacter(4));
+			lane_favor += 0.1f * Counter(teams[0]->GetCharacter(4), teams[1]->GetCharacter(3));
+		}
+		for (size_t ichar2 = 0; ichar2 < 5; ++ichar2)
+		{
+			team_favor += 0.05f * Counter(teams[0]->GetCharacter(ichar1), teams[1]->GetCharacter(ichar2));
+		}
+		teams[0]->GetCharacter(ichar1)->SetFavor(lane_favor, team_favor);
+		teams[1]->GetCharacter(ichar1)->SetFavor(1 - lane_favor, 1 - team_favor);
+	}
 }
