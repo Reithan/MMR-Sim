@@ -141,15 +141,21 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="character.h" />
     <ClInclude Include="elomatchmaker.h" />
+    <ClInclude Include="events.h" />
     <ClInclude Include="match.h" />
     <ClInclude Include="matchmaker.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="roles.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="team.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="character.cpp" />
     <ClCompile Include="elomatchmaker.cpp" />
+    <ClCompile Include="events.cpp" />
     <ClCompile Include="match.cpp" />
     <ClCompile Include="matchmaker.cpp" />
     <ClCompile Include="MMRSim.cpp" />
@@ -160,6 +166,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="team.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
