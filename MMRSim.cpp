@@ -36,10 +36,10 @@ int main()
 				float skill_total = 0.f;
 				for (size_t iskill = 0; iskill < Role::NUM_ROLES; ++iskill)
 				{
-					role_skills[iskill] = (rand() % 100 - 50) / 10.f - skill_total;
+					role_skills[iskill] = MultiRand(-5.f, 5.f, 2);
 					skill_total += role_skills[iskill];
 				}
-				all_players.push_back(std::unique_ptr<player>(new player(rand() % 1000 / 10.f, role_skills, rand() % 1000 / 10.f, 0.0f)));
+				all_players.push_back(std::unique_ptr<player>(new player(MultiRand(0.f, 1.f, 2), role_skills, MultiRand(0.f, 1.f, 3), 0.0f)));
 				player_db.write((char*)all_players.back().get(), sizeof(player));
 			}
 			player_db.close();
@@ -58,7 +58,10 @@ int main()
 		while (mm_queue->NumQueued() < 100 || std::rand() % 10 == 0)
 		{
 			// TODO: Can re-queue duplicate players
-			mm_queue->QueuePlayer(all_players[std::rand() % all_players.size()].get());
+			auto player_ptr = all_players[std::rand() % all_players.size()].get();
+			player_ptr->UpdateTilt(0.25f);
+			if (player_ptr->GetTilt() > 0.25f)
+				mm_queue->QueuePlayer(player_ptr);
 		}
 		if (rand() % 10 == 0)
 			mm_queue->DropPlayer();

@@ -29,3 +29,13 @@ player::player(float skill, const std::vector<float>& role_skills, float irritab
 player::~player()
 {
 }
+
+void player::UpdateTilt(float raw_delta)
+{
+	if (raw_delta < 0)
+		tilt += raw_delta * irritability;
+	else
+		tilt += raw_delta * (1 - irritability);
+
+	tilt = std::max<float>(std::min<float>(tilt, 1.f), -1.f);
+}

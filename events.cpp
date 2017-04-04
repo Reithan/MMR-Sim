@@ -13,18 +13,20 @@ namespace events
 		moraleEventProb({ 0.01f, 0.02f, 0.01f, 0.005f }, &Encourage),
 		moraleEventProb({ 0.005f, 0.005f, 0.01f, 0.01f }, &Troll),
 		moraleEventProb({ 0.001f, 0.001f, 0.005f, 0.01f }, &Leave),
-		moraleEventProb({ 0.0f, 0.01f, 0.05f, 0.1f }, &ShitTalk),
+		moraleEventProb({ -1.f, 0.01f, 0.05f, 0.1f }, &ShitTalk),
 	};
 	const extern std::vector<teamEventProb> teamEvents = {
 		teamEventProb({ 0.01f,0.75f,1.f }, &Teamfight),
 		teamEventProb({ 0.01f,0.75f,1.f }, &ObjectiveContest),
 	};
 
+	// Character-Driven Events
 	void Rotation(character* actor, team* actor_team, team* opp_team)
 	{}
 	void SplitPush(character* actor, team* actor_team, team* opp_team)
 	{}
 
+	// Character Morale Events
 	void Encourage(character* actor, team* actor_team, team* opp_team)
 	{
 		for (size_t iplayer = 0; iplayer < 5; ++iplayer)
@@ -61,6 +63,7 @@ namespace events
 		}
 	}
 
+	// Team-Driven Events
 	void Teamfight(team* actor_team, team* opp_team)
 	{}
 	void ObjectiveContest(team* actor_team, team* opp_team)

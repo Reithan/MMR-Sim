@@ -31,11 +31,12 @@ void elomatchmaker::ReportMatch(match* match_ended, const unsigned short winner)
 	};
 	for (size_t iteam = 0; iteam < 2; ++iteam)
 	{
-		for (size_t iplayer = 0; iplayer < 10; ++iplayer)
+		for (size_t iplayer = 0; iplayer < 5; ++iplayer)
 		{
-			auto player_ptr = match_ended->GetPlayer(iteam, iplayer % 5);
-			float expected = Expectation(team_avg[iteam], team_avg[1 - iteam]);
+			auto player_ptr = match_ended->GetTeam(iteam)->GetPlayer(iplayer);
+			float expected = Expectation(player_ptr->GetRating(), team_avg[1 - iteam]);
 			player_ptr->UpdateRating(k * ((winner == iteam) - expected));
+			player_ptr->UpdateTilt(0.1f * (2 * (winner == iteam) - 1));
 		}
 	}
 }

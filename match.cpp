@@ -9,8 +9,28 @@ match::match() :
 	teams[0] = std::make_unique<team>();
 	teams[1] = std::make_unique<team>();
 	current_phase = MatchPhase::DRAFT;
-}
 
+	for (unsigned short iobj = 0; iobj < Objective::NUM_OBJECTIVES; ++iobj)
+	{
+		for (size_t iteam = 0; iteam < 2; ++iteam)
+		{
+			switch (iobj)
+			{
+			case match::TIER_ONE_TOWER:
+			case match::TIER_TWO_TOWER:
+			case match::TIER_THREE_TOWER:
+			case match::BUFF:
+				objectiveUp[iobj][iteam] = 3;
+				break;
+			case match::CORE:
+			case match::TEAM_BUFF:
+			case match::TEAM_BOOST:
+				objectiveUp[iobj][iteam] = 1;
+				break;
+			}
+		}
+	}
+}
 
 match::~match()
 {

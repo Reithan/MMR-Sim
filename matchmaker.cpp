@@ -42,7 +42,7 @@ std::unique_ptr<match> matchmaker::FormMatch()
 	}
 
 	size_t loop = 0;
-	float window = 100.f;
+	float window = 25.f;
 
 	for (; num_players[0] + num_players[1] < 10;)
 	{
@@ -60,12 +60,18 @@ std::unique_ptr<match> matchmaker::FormMatch()
 					ReQueue(pending_match.get());
 					return nullptr;
 				}
-				window += 50.f;
+				window += 10.f;
 				iplayer = queued_players.begin();
 			}
-			float avg_rating = pending_match->GetTeam(next_team)->GetAvgRating();
-			if ((abs((*iplayer)->GetRating() - avg_rating) <= window ||
-					isnan(avg_rating)) &&
+			float avg_ratings[2] =
+			{
+				pending_match->GetTeam(0)->GetAvgRating(),
+				pending_match->GetTeam(1)->GetAvgRating(),
+			};
+			float avg_rating = avg_ratings[0];
+			if (!isnan(avg_ratings[1]))
+				avg_rating = (avg_rating + avg_ratings[1]) * 0.5f;
+			if ((abs((*iplayer)->GetRating() - avg_rating) <= window || avg_rating) &&
 				pending_match->GetTeam(next_team)->AddPlayer(*iplayer))
 			{
 				++num_players[next_team];
