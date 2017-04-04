@@ -16,7 +16,7 @@ void matchmaker::ReQueue(match* match_ptr)
 	for (size_t iplayer = 0; iplayer < 10; ++iplayer)
 	{
 		auto player_ptr = match_ptr->GetPlayer(iplayer / 5, iplayer % 5);
-		if (nullptr != player_ptr && rand() % 3 != 0 && player_ptr->GetTilt() < 0.75f)
+		if (nullptr != player_ptr && rand() % 3 != 0 && player_ptr->GetTilt() > -0.75f)
 			QueuePlayer(player_ptr);
 	}
 }

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "events.h"
+#include "team.h"
+#include "player.h"
 
 namespace events
 {
@@ -24,13 +26,40 @@ namespace events
 	{}
 
 	void Encourage(character* actor, team* actor_team, team* opp_team)
-	{}
+	{
+		for (size_t iplayer = 0; iplayer < 5; ++iplayer)
+		{
+			auto char_ptr = actor_team->GetCharacter(iplayer);
+			if (actor == char_ptr)
+				char_ptr->GetPlayer()->UpdateTilt((rand() % 50) / 1000.f);
+			else
+				char_ptr->GetPlayer()->UpdateTilt((rand() % 200 - 50) / 1000.f);
+		}
+	}
 	void Troll(character* actor, team* actor_team, team* opp_team)
-	{}
+	{
+		for (size_t iplayer = 0; iplayer < 5; ++iplayer)
+		{
+			auto char_ptr = actor_team->GetCharacter(iplayer);
+			if (actor == char_ptr)
+				char_ptr->GetPlayer()->UpdateTilt((rand() % 200 - 100) / 1000.f);
+			else
+				char_ptr->GetPlayer()->UpdateTilt((rand() % 50 - 200) / 1000.f);
+		}
+	}
 	void Leave(character* actor, team* actor_team, team* opp_team)
 	{}
 	void ShitTalk(character* actor, team* actor_team, team* opp_team)
-	{}
+	{
+		for (size_t iplayer = 0; iplayer < 5; ++iplayer)
+		{
+			auto char_ptr = actor_team->GetCharacter(iplayer);
+			char_ptr->GetPlayer()->UpdateTilt((rand() % 150 - 50) / 1000.f);
+
+			char_ptr = opp_team->GetCharacter(iplayer);
+			char_ptr->GetPlayer()->UpdateTilt((rand() % 50 - 200) / 1000.f);
+		}
+	}
 
 	void Teamfight(team* actor_team, team* opp_team)
 	{}
