@@ -3,16 +3,18 @@
 
 class matchmaker
 {
-	std::vector<player*> queued_players;
-	std::vector<std::unique_ptr<match>> pending_matches;
+	std::unordered_set<player*> queued_players;
+	std::unique_ptr<match> pending_match;
 public:
 	matchmaker();
 	virtual ~matchmaker();
 
-	virtual std::unique_ptr<match> FormMatch()		= 0;
-	virtual bool QueuePlayer(const player* new_player)	= 0;
-	virtual bool DropPlayer(const player* del_player = nullptr)		= 0;
-	virtual void ReportMatch(const match* match_ended, const unsigned short winner) = 0;
+	virtual void ReportMatch(match* match_ended, const unsigned short winner) = 0;
+
+	void ReQueue(match* match_ptr);
+	std::unique_ptr<match> FormMatch();
+	bool QueuePlayer(player* const new_player);
+	bool DropPlayer(player* const del_player = nullptr);
 
 	size_t NumQueued() { return queued_players.size(); }
 };

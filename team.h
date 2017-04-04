@@ -8,11 +8,13 @@ class team
 	float Burst;
 	float DPS;
 
-	std::unique_ptr<character> character[5];
+	std::unique_ptr<character> characters[5];
 public:
 	team();
 	~team();
 
-	const player* GetPlayer(const size_t player_num) const { return character[player_num]->GetPlayer(); }
+	bool AddPlayer(player* const new_player);
+	player* GetPlayer(const size_t player_num) { return characters[player_num]->GetPlayer(); }
+	const float GetAvgRating() const;
 };
 

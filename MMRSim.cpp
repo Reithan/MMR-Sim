@@ -14,6 +14,13 @@ int main()
 	player_db.open("PlayerData.dat", std::ios::binary | std::ios::in);
 	if (player_db.is_open())
 	{
+		unsigned short count;
+		player_db >> count;
+		for (size_t iplayer = 0; iplayer < count; ++iplayer)
+		{
+			all_players.emplace_back();
+			player_db.read((char*)all_players.back().get(), sizeof(player));
+		}
 		player_db.close();
 	}
 	else
@@ -21,9 +28,18 @@ int main()
 		player_db.open("PlayerData.dat", std::ios::binary | std::ios::out);
 		if (player_db.is_open())
 		{
+			player_db << unsigned short(1000);
 			for (size_t iplayer = 0; iplayer < 1000; ++iplayer)
 			{
-				all_players.push_back(std::unique_ptr<player>(new player(0.0f, { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f }, 0.0f, 0.0f)));
+				std::vector<float> role_skills(Role::NUM_ROLES);
+				float skill_total = 0.f;
+				for (size_t iskill = 0; iskill < Role::NUM_ROLES; ++iskill)
+				{
+					role_skills[iskill] = (rand() % 100 - 50) / 10.f - skill_total;
+					skill_total += role_skills[iskill];
+				}
+				all_players.push_back(std::unique_ptr<player>(new player(rand() % 1000 / 10.f, role_skills, rand() % 1000 / 10.f, 0.0f)));
+				player_db.write((char*)all_players.back().get(), sizeof(player));
 			}
 			player_db.close();
 		}
@@ -54,12 +70,7 @@ int main()
 				mm_queue->ReportMatch(imatch->get(), (*imatch)->Winner());
 
 				// re-queue players after match based on random + tilt
-				for (size_t iplayer = 0; iplayer < 10; ++iplayer)
-				{
-					auto player_ptr = (*imatch)->GetPlayer(iplayer / 5, iplayer % 5);
-					if(rand()%3 != 0 && player_ptr->GetTilt() < 0.75f)
-						mm_queue->QueuePlayer(player_ptr);
-				}
+				mm_queue->ReQueue(imatch->get());
 			}
 		}
 	}

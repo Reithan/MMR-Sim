@@ -2,12 +2,12 @@
 #include "character.h"
 
 
-character::character(const player* my_player, const RPSStat counter, const float lvf_balance, const Role role, const float synergy) :
+character::character(player* const my_player) :
 	mPlayer(my_player),
-	counter(counter),
-	lvf_balance(lvf_balance),
-	role(role),
-	synergy(synergy)
+	counter(RPSStat::NUETRAL),
+	lvf_balance(0.f),
+	role(Role::NUM_ROLES),
+	synergy(0.f)
 {
 }
 

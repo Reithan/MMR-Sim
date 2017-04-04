@@ -40,6 +40,7 @@ public:
 	bool Update();
 	unsigned short Winner() { return objectiveUp[CORE][0] ? 1 : 0; }
 
-	const player* GetPlayer(const size_t team_num, const size_t player_num) const { return teams[team_num]->GetPlayer(player_num); }
+	team* GetTeam(const size_t team_num) { return teams[team_num].get(); }
+	player* GetPlayer(const size_t team_num, const size_t player_num) { return teams[team_num]->GetPlayer(player_num); }
 };
 

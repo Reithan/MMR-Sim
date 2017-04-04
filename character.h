@@ -5,7 +5,7 @@ class player;
 
 class character
 {
-	const player* mPlayer;
+	player* const mPlayer;
 
 	enum RPSStat : unsigned short
 	{
@@ -26,9 +26,9 @@ class character
 	unsigned short kda[3];
 	short streak;
 public:
-	character(const player* my_player, const RPSStat counter, const float lvf_balance, const Role role, const float synergy);
+	character(player* const my_player);
 	~character();
 
-	const player* GetPlayer() { return mPlayer; }
+	player* GetPlayer() { return mPlayer; }
 };
 

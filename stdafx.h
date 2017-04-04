@@ -11,6 +11,7 @@
 #include <tchar.h>
 
 #include <vector>
+#include <unordered_set>
 #include <utility>
 #include <memory>
 #include <algorithm>
@@ -18,5 +19,7 @@
 #include <fstream>
 
 #include <random>
+
+#include <math.h>
 
 // TODO: reference additional headers your program requires here
