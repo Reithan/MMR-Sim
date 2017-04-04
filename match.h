@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include "team.h"
 
 class match
@@ -23,8 +22,21 @@ class match
 		NUM_OBJECTIVES
 	};
 	unsigned short objectiveUp[NUM_OBJECTIVES];
+
+	enum MatchPhase : unsigned short
+	{
+		DRAFT,
+		EARLY,
+		MID,
+		LATE,
+
+		NUM_PHASES
+	};
+	MatchPhase current_phase;
 public:
 	match();
 	~match();
+
+	bool Update();
 };
 
