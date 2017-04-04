@@ -1,5 +1,5 @@
 #pragma once
-enum Roles : unsigned short
+enum Role : unsigned short
 {
 	OFFLANE,
 	MIDLANE,

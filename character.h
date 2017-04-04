@@ -26,7 +26,7 @@ class character
 	unsigned short kda[3];
 	short streak;
 public:
-	character();
+	character(const RPSStat counter, const float lvf_balance, const Role role, const float synergy);
 	~character();
 };
 

@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
-// forward dec
-class team;
+#include "team.h"
 
 class match
 {

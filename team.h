@@ -1,8 +1,6 @@
 #pragma once
 #include <memory>
-
-//forward dec
-class character;
+#include "character.h"
 
 class team
 {
