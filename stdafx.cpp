@@ -11,7 +11,7 @@ extern std::unique_ptr<player> null_player = nullptr;
 
 float MultiRand(float min, float max, size_t multi)
 {
-	if (max - min == 0.f)
+	if (std::abs(max - min) < 0.0001f)
 		return min;
 
 	float total = 0.f;

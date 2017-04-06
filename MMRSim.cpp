@@ -54,6 +54,8 @@ int main()
 	}
 	// main loop
 	std::vector<std::unique_ptr<match>> live_matches;
+	const size_t NUM_MATCHES = 1000;
+	size_t matches = 0;
 	while (true)
 	{
 		// add/remove players from queue
@@ -64,7 +66,12 @@ int main()
 		if (rand() % 10 == 0)
 			mm_queue->DropPlayer();
 		// use matchmaker to attempt to form matches
-		auto new_match = mm_queue->FormMatch();
+		std::unique_ptr<match> new_match;
+		if(matches < NUM_MATCHES)
+			while(new_match == nullptr)
+				new_match = mm_queue->FormMatch();
+		++matches;
+
 		if(nullptr != new_match)
 			live_matches.push_back(std::move(new_match));
 		// run sim-step for currently running matches
@@ -81,8 +88,85 @@ int main()
 			else
 				++imatch;
 		}
+
+		if (matches >= NUM_MATCHES && live_matches.empty())
+			break;
 	}
+	
+	// Shut Down Server :P
+	for (auto igame = live_matches.begin(); igame != live_matches.end(); ++igame)
+		mm_queue->ReQueue(igame->get());
+	while (mm_queue->DropPlayer());
+
 	// print stats on MMR accuracy and match stats
-    return 0;
+	mm_queue->AccessAllPlayers().sort([](std::unique_ptr<player>& left, std::unique_ptr<player>& right)->bool{
+		return left->GetRating() < right->GetRating();
+	});
+
+	auto ibegin = mm_queue->AccessAllPlayers().begin();
+	auto iback = mm_queue->AccessAllPlayers().rbegin();
+	float max_MMR = (*iback)->GetRating();
+	float min_MMR = (*ibegin)->GetRating();
+
+	auto imedian = ibegin;
+	for (size_t i = 0; i < 500; i++)
+		++imedian;
+	float median_MMR = (*imedian)->GetRating();
+
+	float low_MMR = 0.5f * (median_MMR + min_MMR);
+	float high_MMR = 0.5f * (median_MMR + max_MMR);
+
+	size_t high_MMR_players = 0;
+	size_t high_MMR_games = 0;
+	float  high_MMR_skill = 0.f;
+	float  high_MMR_irrit = 0.f;
+	float  high_MMR_tilt  = 0.f;
+	size_t low_MMR_players = 0;
+	size_t low_MMR_games = 0;
+	float  low_MMR_skill = 0.f;
+	float  low_MMR_irrit = 0.f;
+	float  low_MMR_tilt  = 0.f;
+	for (auto iplayer = mm_queue->AccessAllPlayers().begin();
+		iplayer != mm_queue->AccessAllPlayers().end();
+		++iplayer)
+	{
+		float MMR = (*iplayer)->GetRating();
+		if (MMR > high_MMR)
+		{
+			++high_MMR_players;
+			high_MMR_skill += (*iplayer)->GetSkill();
+			high_MMR_games += (*iplayer)->GetGames();
+			high_MMR_irrit += (*iplayer)->GetIrritibility();
+			high_MMR_tilt  += (*iplayer)->GetTilt();
+		}
+		else if (MMR < low_MMR)
+		{
+			++low_MMR_players;
+			low_MMR_skill += (*iplayer)->GetSkill();
+			low_MMR_games += (*iplayer)->GetGames();
+			low_MMR_irrit += (*iplayer)->GetIrritibility();
+			low_MMR_tilt  += (*iplayer)->GetTilt();
+		}
+	}
+	high_MMR_skill /= high_MMR_players;
+	low_MMR_skill  /= low_MMR_players;
+
+	high_MMR_games /= high_MMR_players;
+	low_MMR_games /= low_MMR_players;
+
+	high_MMR_irrit /= high_MMR_players;
+	low_MMR_irrit  /= low_MMR_players;
+
+	high_MMR_tilt /= high_MMR_players;
+	low_MMR_tilt  /= low_MMR_players;
+
+	std::cout << "High MMR = " << high_MMR << "\tNum Players = " << high_MMR_players
+		<< "\n\tAvg Skill = " << high_MMR_skill << "\tAvg Games = " << high_MMR_games
+		<< "\n\tAvg Irritibility = " << high_MMR_irrit << "\tAvg Tilt = " << high_MMR_tilt << '\n';
+	std::cout << "Low MMR = " << low_MMR << "\tNum Players = " << low_MMR_players
+		<< "\n\tAvg Skill = " << low_MMR_skill << "\tAvg Games = " << low_MMR_games
+		<< "\n\tAvg Irritibility = " << low_MMR_irrit << "\tAvg Tilt = " << low_MMR_tilt << '\n';
+	std::getchar();
+	return 0;
 }
 

@@ -6,7 +6,8 @@ player::player() :
 	skill(0.f),
 	irritability(0.f),
 	tilt(0.f),
-	rating(1000.f)
+	rating(1000.f),
+	games_played(0)
 {
 	for (size_t irole = 0; irole < Role::NUM_ROLES; ++irole)
 	{
@@ -18,7 +19,8 @@ player::player(float skill, const std::vector<float>& role_skills, float irritab
 	skill(skill),
 	irritability(irritability),
 	tilt(tilt),
-	rating(1000.f)
+	rating(1000.f),
+	games_played(0)
 {
 	for (size_t irole = 0; irole < Role::NUM_ROLES; ++irole)
 	{

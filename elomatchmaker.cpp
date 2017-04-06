@@ -44,7 +44,7 @@ void elomatchmaker::ReportMatch(match* match_ended, const unsigned short winner)
 	}
 
 	static short count = 0;
-	if (++count == 100)
+	if (++count == 100 || (std::abs(team_avg[0] - team_avg[1]) > 100.f && (team_avg[0] > team_avg[1]) != (winner == 0)))
 	{
 		count = 0;
 		std::cout << team_avg[0] << (winner == 0 ? "(W)" : "") << " v. "

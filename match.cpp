@@ -175,6 +175,14 @@ bool match::Update()
 				char2->LaneEarnings(65 * (1 - result), 10 * (1 - result));
 				break;
 			}
+
+			for (float i = 0.f; i < 0.4f; i+=0.1f)
+			{
+				if (result <= i)
+					char1->Kill(char2);
+				else if (result >= 1.f - i)
+					char2->Kill(char1);
+			}
 		}
 
 		for (size_t iteam = 0; iteam < 2; ++iteam)

@@ -117,11 +117,12 @@ bool matchmaker::DropPlayer()
 		return false;
 
 	auto i = queued_players.begin();
-	for (; rand() % 100 == 0; ++i)
+	for (; rand() % 10 == 0; )
 	{
-		if (i == queued_players.end())
+		if (++i == queued_players.end())
 			i = queued_players.begin();
 	}
+	all_players.push_back(std::move(*i));
 	queued_players.erase(i);
 	return true;
 }
