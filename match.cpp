@@ -178,9 +178,9 @@ bool match::Update()
 
 			for (float i = 0.f; i < 0.4f; i+=0.1f)
 			{
-				if (result <= i)
+				if (result >= 1.f - i)
 					char1->Kill(char2);
-				else if (result >= 1.f - i)
+				else if (result <= i)
 					char2->Kill(char1);
 			}
 		}
@@ -217,10 +217,8 @@ bool match::Update()
 			if (MultiRand(0.f, 1.f) < 0.05f)
 				events::ObjectiveContest(teams[iteam].get(), teams[1 - iteam].get());
 		}
-		current_phase = match::MID;
 		break;
 	case match::MID:
-		events::ObjectiveContest(teams[0].get(), teams[1].get());
 		break;
 	case match::LATE:
 		break;

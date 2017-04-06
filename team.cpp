@@ -71,9 +71,11 @@ float team::GetVision() const
 	for (size_t ichar = 0; ichar < 5; ++ichar)
 	{
 		if (ichar == Role::SUPPORT)
-			vision += 0.4f * characters[ichar]->GetPower();
-		if (ichar != Role::CARRY)
+			vision += 0.3f * characters[ichar]->GetPower();
+		else if (ichar != Role::CARRY)
 			vision += 0.2f * characters[ichar]->GetPower();
+		else
+			vision += 0.1f * characters[ichar]->GetPower();
 	}
 	return vision;
 }
@@ -91,7 +93,7 @@ void team::GenerateStats(bool present[5])
 		Burst += 0.05f * power;
 		DPS += 0.2f * power;
 	}
-	if (present[Role::OFFLANE])
+	if (present[Role::MIDLANE])
 	{
 		power = characters[Role::MIDLANE]->GetPower();
 		CC += 0.2f * power;
@@ -99,7 +101,7 @@ void team::GenerateStats(bool present[5])
 		Burst += 0.4f * power;
 		DPS += 0.05f * power;
 	}
-	if (present[Role::OFFLANE])
+	if (present[Role::JUNGLE])
 	{
 		power = characters[Role::JUNGLE]->GetPower();
 		CC += 0.05f * power;
@@ -107,7 +109,7 @@ void team::GenerateStats(bool present[5])
 		Burst += 0.3f * power;
 		DPS += 0.3f * power;
 	}
-	if (present[Role::OFFLANE])
+	if (present[Role::CARRY])
 	{
 		power = characters[Role::CARRY]->GetPower();
 		CC += 0.05f * power;
@@ -115,7 +117,7 @@ void team::GenerateStats(bool present[5])
 		Burst += 0.2f * power;
 		DPS += 0.4f * power;
 	}
-	if (present[Role::OFFLANE])
+	if (present[Role::SUPPORT])
 	{
 		power = characters[Role::SUPPORT]->GetPower();
 		CC += 0.4f * power;
@@ -129,7 +131,7 @@ float team::OpposeStats(team* opp_for, bool present[2][5])
 {
 	GenerateStats(present[0]);
 	opp_for->GenerateStats(present[1]);
-	return 0.5f * (DPS - opp_for->CC + Burst - opp_for->Tank);
+	return 0.25f * ((DPS - opp_for->CC + Burst - opp_for->Tank) - (opp_for->DPS - CC + opp_for->Burst - Tank));
 }
 
 float team::LoseObjective()

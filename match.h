@@ -23,7 +23,7 @@ public:
 	~match();
 
 	bool Update();
-	unsigned short Winner() { return teams[0]->ObjectiveUp(team::Objective::CORE) ? 1 : 0; }
+	unsigned short Winner() { return teams[0]->ObjectiveUp(team::Objective::CORE) ? 0 : 1; }
 
 	team* GetTeam(const size_t team_num) { return teams[team_num].get(); }
 	std::unique_ptr<player>& GetPlayer(const size_t team_num, const size_t player_num) { return teams[team_num]->GetPlayer(player_num); }

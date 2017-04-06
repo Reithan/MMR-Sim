@@ -33,11 +33,12 @@ short Counter(character* left, character* right)
 const float character::GetSkill() const
 {
 	float tilt = mPlayer->GetTilt();
-	float skill = (mPlayer->GetSkill() + mPlayer->GetRoleSkill(role));
+	float skill = std::max<float>(0.f, std::min<float>(1.f, mPlayer->GetSkill() + mPlayer->GetRoleSkill(role)));
 	if (tilt < 0)
-		return skill * (1 + tilt);
+		skill = skill * 0.5f * (1 + tilt);
 	else
-		return skill + (1 - skill) * tilt;
+		skill = skill + 0.5 * (1 - skill) * tilt;
+	return skill;
 }
 
 const float character::GetPower()

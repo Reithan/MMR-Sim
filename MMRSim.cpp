@@ -40,7 +40,7 @@ int main()
 				float skill_total = 0.f;
 				for (size_t iskill = 0; iskill < Role::NUM_ROLES; ++iskill)
 				{
-					role_skills[iskill] = MultiRand(-5.f, 5.f, 2);
+					role_skills[iskill] = MultiRand(-0.05f, 0.05f, 2);
 					skill_total += role_skills[iskill];
 				}
 				mm_queue->AccessAllPlayers().push_back(std::unique_ptr<player>(new player(MultiRand(0.f, 1.f, 2), role_skills, MultiRand(0.f, 1.f, 3), 0.0f)));

@@ -65,7 +65,7 @@ namespace events
 		{
 			if (target == Role::CARRY || target == Role::SUPPORT)
 			{
-				opp_team->GetCharacter(Role::SUPPORT)->Assist(opp_team->GetCharacter(target), 2);
+				opp_team->GetCharacter(Role::SUPPORT)->Assist(actor, 1);
 			}
 			opp_team->GetCharacter(target)->Kill(actor);
 		}
@@ -263,7 +263,7 @@ namespace events
 		}
 		else if (sneaky > -0.25f)
 		{
-			Teamfight(actor_team, opp_team);
+			Teamfight(opp_team, actor_team);
 		}
 		else
 		{
