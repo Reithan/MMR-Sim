@@ -16,7 +16,7 @@ public:
 		NUM_RPS_STATS
 	};
 private:
-	player* const mPlayer;
+	std::unique_ptr<player> mPlayer;
 
 	RPSStat counter;
 	float lvf_balance;
@@ -29,17 +29,29 @@ private:
 	short streak;
 	float lane_favor;
 	float team_favor;
+	
+	void Death();
 public:
-	character(player* const my_player);
+	character(std::unique_ptr<player>&& my_player);
 	~character();
 
-	player* GetPlayer() { return mPlayer; }
-	RPSStat GetRPS() const { return counter; }
-	Role GetRole() const { return role; }
+	std::unique_ptr<player>& GetPlayer() { return mPlayer; }
+	const RPSStat GetRPS() const { return counter; }
+	const Role GetRole() const { return role; }
+	const float GetLaneFavor() const { return lane_favor; }
+	const float GetTeamFavor() const { return team_favor; }
+	const float GetSkill() const;
+	const float GetSynergy() const { return synergy; }
+	const float GetPower();
+	const float GetLevel() const { return level; }
+	const short GetStreak() const { return streak; }
 
 	void Pick(RPSStat rps, float lvf, Role lane) { counter = rps; lvf_balance = lvf; role = lane; }
 	void Disconnect() { role = Role::DISCONNECTED; }
 	void SetFavor(float new_lane_favor, float new_team_favor) { lane_favor = new_lane_favor; team_favor = new_team_favor; }
+	void LaneEarnings(float exp, float gold);
+	void Kill(character* victim);
+	void Assist(character* victim, size_t num_assists);
 };
 
 short Counter(character* left, character* right);

@@ -9,27 +9,6 @@ match::match() :
 	teams[0] = std::make_unique<team>();
 	teams[1] = std::make_unique<team>();
 	current_phase = MatchPhase::DRAFT;
-
-	for (unsigned short iobj = 0; iobj < Objective::NUM_OBJECTIVES; ++iobj)
-	{
-		for (size_t iteam = 0; iteam < 2; ++iteam)
-		{
-			switch (iobj)
-			{
-			case match::TIER_ONE_TOWER:
-			case match::TIER_TWO_TOWER:
-			case match::TIER_THREE_TOWER:
-			case match::BUFF:
-				objectiveUp[iobj][iteam] = 3;
-				break;
-			case match::CORE:
-			case match::TEAM_BUFF:
-			case match::TEAM_BOOST:
-				objectiveUp[iobj][iteam] = 1;
-				break;
-			}
-		}
-	}
 }
 
 match::~match()
@@ -125,7 +104,7 @@ bool match::Update()
 		// non-morale events
 		for (auto ievent = events::characterEvents.begin(); ievent != events::characterEvents.end(); ++ievent)
 		{
-			if (ievent->first[current_phase - 1] >= rand() % 1000 / 1000.f)
+			if (ievent->first[current_phase - 1] > rand() % 1000 / 1000.f)
 			{
 				size_t team_num = rand() % 2;
 				ievent->second(teams[team_num]->GetCharacter(rand() % 5), teams[team_num].get(), teams[1 - team_num].get());
@@ -133,7 +112,7 @@ bool match::Update()
 		}
 		for (auto ievent = events::teamEvents.begin(); ievent != events::teamEvents.end(); ++ievent)
 		{
-			if (ievent->first[current_phase - 1] >= rand() % 1000 / 1000.f)
+			if (ievent->first[current_phase - 1] > rand() % 1000 / 1000.f)
 			{
 				size_t team_num = rand() % 2;
 				ievent->second(teams[team_num].get(), teams[1 - team_num].get());
@@ -143,10 +122,13 @@ bool match::Update()
 		// morale events
 		for (auto ievent = events::moraleEvents.begin(); ievent != events::moraleEvents.end(); ++ievent)
 		{
-			if (ievent->first[current_phase] >= rand() % 1000 / 1000.f)
+			size_t team_num = rand() % 2;
+			size_t ichar = rand() % 5;
+			float modifier = teams[team_num]->GetCharacter(ichar)->GetPlayer()->GetTilt() * 0.1f * (ievent->second == &events::Encourage ? 1 : -1);
+			bool trigger = (ievent->first[current_phase] + modifier) > MultiRand(0.f, 1.f);
+			if (trigger)
 			{
-				size_t team_num = rand() % 2;
-				ievent->second(teams[team_num]->GetCharacter(rand() % 5), teams[team_num].get(), teams[1 - team_num].get());
+				ievent->second(teams[team_num]->GetCharacter(ichar), teams[team_num].get(), teams[1 - team_num].get());
 			}
 		}
 		break;
@@ -165,14 +147,78 @@ bool match::Update()
 		}
 		break;
 	case match::EARLY:
+		for (size_t ichar = 0; ichar < 5; ++ichar)
+		{
+			float result = MultiRand(0.f, 1.f, 4);
+			auto char1 = teams[0]->GetCharacter(ichar);
+			auto char2 = teams[1]->GetCharacter(ichar);
+			result = std::max<float>(0.f, std::min<float>(1.f,
+				result + char1->GetPower() * char1->GetLaneFavor() - char2->GetPower() * char2->GetLaneFavor()));
+			
+			switch (Role(ichar))
+			{
+			case OFFLANE:
+			case MIDLANE:
+				char1->LaneEarnings(100 * result, 100 * result);
+				char2->LaneEarnings(100 * (1 - result), 100 * (1 - result));
+				break;
+			case JUNGLE:
+				char1->LaneEarnings(75 * result, 60 * result);
+				char2->LaneEarnings(75 * (1 - result), 60 * (1 - result));
+				break;
+			case CARRY:
+				char1->LaneEarnings(65 * result, 90 * result);
+				char2->LaneEarnings(65 * (1 - result), 90 * (1 - result));
+				break;
+			case SUPPORT:
+				char1->LaneEarnings(65 * result, 10 * result);
+				char2->LaneEarnings(65 * (1 - result), 10 * (1 - result));
+				break;
+			}
+		}
+
+		for (size_t iteam = 0; iteam < 2; ++iteam)
+		{
+			for (size_t ichar = 0; ichar < 5; ++ichar)
+			{
+				short ganks = 0;
+				auto char_ptr = teams[iteam]->GetCharacter(ichar);
+				switch (Role(ichar))
+				{
+				case OFFLANE:
+				case SUPPORT:
+					ganks = std::max<short>(0, (short)MultiRand(-1.f, 2.f, 2));
+					break;
+				case MIDLANE:
+					ganks = std::max<short>(0, (short)MultiRand(0.f, 3.f, 2));
+					break;
+				case JUNGLE:
+					ganks = std::max<short>(0, (short)MultiRand(0.f, 4.f, 2));
+					break;
+				case CARRY:
+					ganks = std::max<short>(0, (short)MultiRand(0.f, 1.f, 2));
+					break;
+				}
+				ganks = short(ganks * char_ptr->GetPower() * 5.f);
+				for (short i = 0; i < ganks; ++i)
+					events::Rotation(char_ptr, teams[iteam].get(), teams[1 - iteam].get());
+
+				if (MultiRand(0.f, 1.f) - char_ptr->GetPower() < 0.05f)
+					events::SplitPush(char_ptr, teams[iteam].get(), teams[1 - iteam].get());
+			}
+			if (MultiRand(0.f, 1.f) < 0.05f)
+				events::ObjectiveContest(teams[iteam].get(), teams[1 - iteam].get());
+		}
+		current_phase = match::MID;
 		break;
 	case match::MID:
+		events::ObjectiveContest(teams[0].get(), teams[1].get());
 		break;
 	case match::LATE:
 		break;
 	}
 
-	if (objectiveUp[Objective::CORE][0] + objectiveUp[Objective::CORE][1] < 2)
+	if (teams[0]->ObjectiveUp(team::Objective::CORE) + teams[1]->ObjectiveUp(team::Objective::CORE) < 2)
 		return false;
 	return true;
 }
@@ -187,20 +233,20 @@ void match::CalculateFavor()
 			team_favor = 0.f;
 		if (ichar1 < 3)
 		{
-			lane_favor += 0.2f * Counter(teams[0]->GetCharacter(ichar1), teams[1]->GetCharacter(ichar1));
+			lane_favor = 0.2f * Counter(teams[0]->GetCharacter(ichar1), teams[1]->GetCharacter(ichar1));
 		}
 		else
 		{
-			lane_favor += 0.1f * Counter(teams[0]->GetCharacter(3), teams[1]->GetCharacter(3));
-			lane_favor += 0.1f * Counter(teams[0]->GetCharacter(3), teams[1]->GetCharacter(4));
-			lane_favor += 0.1f * Counter(teams[0]->GetCharacter(4), teams[1]->GetCharacter(4));
-			lane_favor += 0.1f * Counter(teams[0]->GetCharacter(4), teams[1]->GetCharacter(3));
+			lane_favor  = 0.05f * Counter(teams[0]->GetCharacter(3), teams[1]->GetCharacter(3));
+			lane_favor += 0.05f * Counter(teams[0]->GetCharacter(3), teams[1]->GetCharacter(4));
+			lane_favor += 0.05f * Counter(teams[0]->GetCharacter(4), teams[1]->GetCharacter(4));
+			lane_favor += 0.05f * Counter(teams[0]->GetCharacter(4), teams[1]->GetCharacter(3));
 		}
 		for (size_t ichar2 = 0; ichar2 < 5; ++ichar2)
 		{
 			team_favor += 0.05f * Counter(teams[0]->GetCharacter(ichar1), teams[1]->GetCharacter(ichar2));
 		}
-		teams[0]->GetCharacter(ichar1)->SetFavor(lane_favor, team_favor);
+		teams[0]->GetCharacter(ichar1)->SetFavor(1 + lane_favor, 1 + team_favor);
 		teams[1]->GetCharacter(ichar1)->SetFavor(1 - lane_favor, 1 - team_favor);
 	}
 }
