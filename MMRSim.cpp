@@ -168,9 +168,9 @@ int main()
 	std::cout << "Average MMR = " << median_MMR << "\tNum Players = " << players[1]
 		<< "\n\tAvg Skill = " << skill[1] << "\tAvg Games = " << games[1]
 		<< "\n\tAvg Irritibility = " << irrit[1] << "\tAvg Tilt = " << tilt[1] << '\n';
-	std::cout << "Low MMR = " << low_MMR << "\tNum Players = " << players[2]
-		<< "\n\tAvg Skill = " << skill[2] << "\tAvg Games = " << games[2]
-		<< "\n\tAvg Irritibility = " << irrit[2] << "\tAvg Tilt = " << tilt[2] << '\n';
+	std::cout << "Low MMR = " << low_MMR << "\tNum Players = " << players[0]
+		<< "\n\tAvg Skill = " << skill[0] << "\tAvg Games = " << games[0]
+		<< "\n\tAvg Irritibility = " << irrit[0] << "\tAvg Tilt = " << tilt[0] << '\n';
 	std::getchar();
 	return 0;
 }

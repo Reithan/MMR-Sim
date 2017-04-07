@@ -100,9 +100,9 @@ bool matchmaker::QueuePlayer(std::unique_ptr<player>&& new_player)
 
 	for (auto iplayer = all_players.begin(); iplayer != all_players.end(); ++iplayer)
 	{
-		(*iplayer)->UpdateTilt(0.25f);
-		if ((*iplayer)->GetTilt() > 0.25f)
+		if (rand() % 3 == 0)
 		{
+			(*iplayer)->UpdateTilt(MultiRand(-0.5f, 1.f, 3));
 			queued_players.push_back(std::move((*iplayer)));
 			all_players.erase(iplayer);
 			return true;

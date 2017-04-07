@@ -137,8 +137,8 @@ namespace events
 				++num_DC[0];
 
 			char_ptr = opp_team->GetCharacter(iplayer);
-			if (char_ptr->GetRole() == Role::DISCONNECTED)
-				char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.1f, 0.05f, 2));
+			if (char_ptr->GetRole() != Role::DISCONNECTED)
+				char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.05f, 0.05f, 2));
 			else
 				++num_DC[1];
 		}
@@ -150,17 +150,21 @@ namespace events
 	}
 	void ShitTalk(character* actor, team* actor_team, team* opp_team)
 	{
+		actor->GetPlayer()->UpdateTilt(MultiRand(-0.05f, 0.15f, 2));
+	
 		for (size_t iplayer = 0; iplayer < 5; ++iplayer)
 		{
 			auto char_ptr = actor_team->GetCharacter(iplayer);
-			if (char_ptr->GetRole() == Role::DISCONNECTED)
-				continue;
-			char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.05f, 0.1f));
+			if (char_ptr->GetRole() != Role::DISCONNECTED && char_ptr != actor)
+			{
+				char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.05f, 0.1f, 2));
+			}
 
 			char_ptr = opp_team->GetCharacter(iplayer);
-			if (char_ptr->GetRole() == Role::DISCONNECTED)
-				continue;
-			char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.15f, 0.05f, 2));
+			if (char_ptr->GetRole() != Role::DISCONNECTED)
+			{
+				char_ptr->GetPlayer()->UpdateTilt(MultiRand(-0.15f, 0.05f, 2));
+			}
 		}
 	}
 

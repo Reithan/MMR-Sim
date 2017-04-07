@@ -16,6 +16,6 @@ float MultiRand(float min, float max, size_t multi)
 
 	float total = 0.f;
 	for (size_t i = 0; i < multi; i++)
-		total += rand() % int((max - min) * 10000) + (min * 10000);
+		total += (max - min > 0 ? 1 : -1) * (rand() % int((max - min) * 10000)) + (min * 10000);
 	return total / (multi * 10000.f);
 }

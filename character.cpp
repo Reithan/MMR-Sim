@@ -37,7 +37,7 @@ const float character::GetSkill() const
 	if (tilt < 0)
 		skill = skill * 0.5f * (1 + tilt);
 	else
-		skill = skill + 0.5 * (1 - skill) * tilt;
+		skill = skill + 0.5f * (1 - skill) * tilt;
 	return skill;
 }
 
