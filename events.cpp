@@ -10,10 +10,10 @@ namespace events
 		charEventProb({ 0.001f, 0.05f, 0.25f }, &SplitPush),
 	};
 	const extern std::vector<moraleEventProb> moraleEvents = {
-		moraleEventProb({ 0.01f, 0.02f, 0.01f, 0.005f }, &Encourage),
-		moraleEventProb({ 0.005f, 0.005f, 0.01f, 0.01f }, &Troll),
-		moraleEventProb({ 0.001f, 0.001f, 0.005f, 0.01f }, &Leave),
-		moraleEventProb({ -1.f, 0.01f, 0.05f, 0.1f }, &ShitTalk),
+		moraleEventProb({ 0.005f, 0.01f, 0.01f, 0.005f }, &Encourage),
+		moraleEventProb({ 0.005f, 0.01f, 0.01f, 0.005f }, &Troll),
+		moraleEventProb({ 0.001f, 0.001f, 0.005f, 0.001f }, &Leave),
+		moraleEventProb({ -1.f, 0.01f, 0.05f, 0.05f }, &ShitTalk),
 	};
 	const extern std::vector<teamEventProb> teamEvents = {
 		teamEventProb({ 0.01f,0.75f,1.f }, &Teamfight),

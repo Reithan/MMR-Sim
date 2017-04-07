@@ -18,6 +18,8 @@ class match
 	short draft_pick;
 
 	bool Pick();
+	void FarmLanes(float amount);
+	void MakeRotations(float scale);
 public:
 	match();
 	~match();

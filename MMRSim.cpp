@@ -54,7 +54,7 @@ int main()
 	}
 	// main loop
 	std::vector<std::unique_ptr<match>> live_matches;
-	const size_t NUM_MATCHES = 1000;
+	const size_t NUM_MATCHES = 5000;
 	size_t matches = 0;
 	while (true)
 	{
@@ -116,16 +116,12 @@ int main()
 	float low_MMR = 0.5f * (median_MMR + min_MMR);
 	float high_MMR = 0.5f * (median_MMR + max_MMR);
 
-	size_t high_MMR_players = 0;
-	size_t high_MMR_games = 0;
-	float  high_MMR_skill = 0.f;
-	float  high_MMR_irrit = 0.f;
-	float  high_MMR_tilt  = 0.f;
-	size_t low_MMR_players = 0;
-	size_t low_MMR_games = 0;
-	float  low_MMR_skill = 0.f;
-	float  low_MMR_irrit = 0.f;
-	float  low_MMR_tilt  = 0.f;
+	size_t players [3] = { 0  , };
+	size_t games   [3] = { 0  , };
+	float  skill   [3] = { 0.f, };
+	float  irrit   [3] = { 0.f, };
+	float  tilt    [3] = { 0.f, };
+
 	for (auto iplayer = mm_queue->AccessAllPlayers().begin();
 		iplayer != mm_queue->AccessAllPlayers().end();
 		++iplayer)
@@ -133,39 +129,48 @@ int main()
 		float MMR = (*iplayer)->GetRating();
 		if (MMR > high_MMR)
 		{
-			++high_MMR_players;
-			high_MMR_skill += (*iplayer)->GetSkill();
-			high_MMR_games += (*iplayer)->GetGames();
-			high_MMR_irrit += (*iplayer)->GetIrritibility();
-			high_MMR_tilt  += (*iplayer)->GetTilt();
+			++players[2];
+			  skill  [2]+= (*iplayer)->GetSkill();
+			  games  [2]+= (*iplayer)->GetGames();
+			  irrit  [2]+= (*iplayer)->GetIrritibility();
+			  tilt   [2]+= (*iplayer)->GetTilt();
 		}
 		else if (MMR < low_MMR)
 		{
-			++low_MMR_players;
-			low_MMR_skill += (*iplayer)->GetSkill();
-			low_MMR_games += (*iplayer)->GetGames();
-			low_MMR_irrit += (*iplayer)->GetIrritibility();
-			low_MMR_tilt  += (*iplayer)->GetTilt();
+			++players[0];
+			  skill  [0]+= (*iplayer)->GetSkill();
+			  games  [0]+= (*iplayer)->GetGames();
+			  irrit  [0]+= (*iplayer)->GetIrritibility();
+			  tilt   [0]+= (*iplayer)->GetTilt();
+		}
+		else
+		{
+			++players[1];
+			  skill  [1]+= (*iplayer)->GetSkill();
+			  games  [1]+= (*iplayer)->GetGames();
+			  irrit  [1]+= (*iplayer)->GetIrritibility();
+			  tilt   [1]+= (*iplayer)->GetTilt();
 		}
 	}
-	high_MMR_skill /= high_MMR_players;
-	low_MMR_skill  /= low_MMR_players;
 
-	high_MMR_games /= high_MMR_players;
-	low_MMR_games /= low_MMR_players;
+	for (size_t i = 0; i < 3; i++)
+	{
+		skill [i] /= players[i];
+		games [i] /= players[i];
+		irrit [i] /= players[i];
+		tilt  [i] /= players[i];
+	}
 
-	high_MMR_irrit /= high_MMR_players;
-	low_MMR_irrit  /= low_MMR_players;
-
-	high_MMR_tilt /= high_MMR_players;
-	low_MMR_tilt  /= low_MMR_players;
-
-	std::cout << "High MMR = " << high_MMR << "\tNum Players = " << high_MMR_players
-		<< "\n\tAvg Skill = " << high_MMR_skill << "\tAvg Games = " << high_MMR_games
-		<< "\n\tAvg Irritibility = " << high_MMR_irrit << "\tAvg Tilt = " << high_MMR_tilt << '\n';
-	std::cout << "Low MMR = " << low_MMR << "\tNum Players = " << low_MMR_players
-		<< "\n\tAvg Skill = " << low_MMR_skill << "\tAvg Games = " << low_MMR_games
-		<< "\n\tAvg Irritibility = " << low_MMR_irrit << "\tAvg Tilt = " << low_MMR_tilt << '\n';
+	std::cout << "\n\n";
+	std::cout << "High MMR = " << high_MMR << "\tNum Players = " << players[2]
+		<< "\n\tAvg Skill = " << skill[2] << "\tAvg Games = " << games[2]
+		<< "\n\tAvg Irritibility = " << irrit[2] << "\tAvg Tilt = " << tilt[2] << '\n';
+	std::cout << "Average MMR = " << median_MMR << "\tNum Players = " << players[1]
+		<< "\n\tAvg Skill = " << skill[1] << "\tAvg Games = " << games[1]
+		<< "\n\tAvg Irritibility = " << irrit[1] << "\tAvg Tilt = " << tilt[1] << '\n';
+	std::cout << "Low MMR = " << low_MMR << "\tNum Players = " << players[2]
+		<< "\n\tAvg Skill = " << skill[2] << "\tAvg Games = " << games[2]
+		<< "\n\tAvg Irritibility = " << irrit[2] << "\tAvg Tilt = " << tilt[2] << '\n';
 	std::getchar();
 	return 0;
 }

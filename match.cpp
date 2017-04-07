@@ -124,8 +124,8 @@ bool match::Update()
 		{
 			size_t team_num = rand() % 2;
 			size_t ichar = rand() % 5;
-			float modifier = teams[team_num]->GetCharacter(ichar)->GetPlayer()->GetTilt() * 0.1f * (ievent->second == &events::Encourage ? 1 : -1);
-			bool trigger = (ievent->first[current_phase] + modifier) > MultiRand(0.f, 1.f);
+			float modifier = 1 + teams[team_num]->GetCharacter(ichar)->GetPlayer()->GetTilt() * (ievent->second == &events::Encourage ? 1 : -1);
+			bool trigger = (ievent->first[current_phase] * modifier) > MultiRand(0.f, 1.f);
 			if (trigger)
 			{
 				ievent->second(teams[team_num]->GetCharacter(ichar), teams[team_num].get(), teams[1 - team_num].get());
@@ -147,80 +147,18 @@ bool match::Update()
 		}
 		break;
 	case match::EARLY:
-		for (size_t ichar = 0; ichar < 5; ++ichar)
-		{
-			float result = MultiRand(0.f, 1.f, 4);
-			auto char1 = teams[0]->GetCharacter(ichar);
-			auto char2 = teams[1]->GetCharacter(ichar);
-			result = std::max<float>(0.f, std::min<float>(1.f,
-				result + char1->GetPower() * char1->GetLaneFavor() - char2->GetPower() * char2->GetLaneFavor()));
-			
-			switch (Role(ichar))
-			{
-			case OFFLANE:
-			case MIDLANE:
-				char1->LaneEarnings(100 * result, 100 * result);
-				char2->LaneEarnings(100 * (1 - result), 100 * (1 - result));
-				break;
-			case JUNGLE:
-				char1->LaneEarnings(75 * result, 60 * result);
-				char2->LaneEarnings(75 * (1 - result), 60 * (1 - result));
-				break;
-			case CARRY:
-				char1->LaneEarnings(65 * result, 90 * result);
-				char2->LaneEarnings(65 * (1 - result), 90 * (1 - result));
-				break;
-			case SUPPORT:
-				char1->LaneEarnings(65 * result, 10 * result);
-				char2->LaneEarnings(65 * (1 - result), 10 * (1 - result));
-				break;
-			}
-
-			for (float i = 0.f; i < 0.4f; i+=0.1f)
-			{
-				if (result >= 1.f - i)
-					char1->Kill(char2);
-				else if (result <= i)
-					char2->Kill(char1);
-			}
-		}
-
-		for (size_t iteam = 0; iteam < 2; ++iteam)
-		{
-			for (size_t ichar = 0; ichar < 5; ++ichar)
-			{
-				short ganks = 0;
-				auto char_ptr = teams[iteam]->GetCharacter(ichar);
-				switch (Role(ichar))
-				{
-				case OFFLANE:
-				case SUPPORT:
-					ganks = std::max<short>(0, (short)MultiRand(-1.f, 2.f, 2));
-					break;
-				case MIDLANE:
-					ganks = std::max<short>(0, (short)MultiRand(0.f, 3.f, 2));
-					break;
-				case JUNGLE:
-					ganks = std::max<short>(0, (short)MultiRand(0.f, 4.f, 2));
-					break;
-				case CARRY:
-					ganks = std::max<short>(0, (short)MultiRand(0.f, 1.f, 2));
-					break;
-				}
-				ganks = short(ganks * char_ptr->GetPower() * 5.f);
-				for (short i = 0; i < ganks; ++i)
-					events::Rotation(char_ptr, teams[iteam].get(), teams[1 - iteam].get());
-
-				if (MultiRand(0.f, 1.f) - char_ptr->GetPower() < 0.05f)
-					events::SplitPush(char_ptr, teams[iteam].get(), teams[1 - iteam].get());
-			}
-			if (MultiRand(0.f, 1.f) < 0.05f)
-				events::ObjectiveContest(teams[iteam].get(), teams[1 - iteam].get());
-		}
+		FarmLanes(100.f);
+		MakeRotations(1.f);
+		current_phase = match::MID;
 		break;
 	case match::MID:
+		FarmLanes(75.f);
+		MakeRotations(1.5f);
+		current_phase = match::LATE;
 		break;
 	case match::LATE:
+		FarmLanes(0.25f);
+		MakeRotations(2.f);
 		break;
 	}
 
@@ -254,5 +192,82 @@ void match::CalculateFavor()
 		}
 		teams[0]->GetCharacter(ichar1)->SetFavor(1 + lane_favor, 1 + team_favor);
 		teams[1]->GetCharacter(ichar1)->SetFavor(1 - lane_favor, 1 - team_favor);
+	}
+}
+
+void match::FarmLanes(float amount)
+{
+	for (size_t ichar = 0; ichar < 5; ++ichar)
+	{
+		float result = MultiRand(0.f, 1.f, 4);
+		auto char1 = teams[0]->GetCharacter(ichar);
+		auto char2 = teams[1]->GetCharacter(ichar);
+		result = std::max<float>(0.f, std::min<float>(1.f,
+			result + char1->GetPower() * char1->GetLaneFavor() - char2->GetPower() * char2->GetLaneFavor()));
+
+		switch (Role(ichar))
+		{
+		case OFFLANE:
+		case MIDLANE:
+			char1->LaneEarnings(amount * result, amount * result);
+			char2->LaneEarnings(amount * (1 - result), amount * (1 - result));
+			break;
+		case JUNGLE:
+			char1->LaneEarnings(0.75f * amount * result, 0.6f * amount * result);
+			char2->LaneEarnings(0.75f * amount * (1 - result), 0.6f * amount * (1 - result));
+			break;
+		case CARRY:
+			char1->LaneEarnings(0.65f * amount * result, 0.9f * amount * result);
+			char2->LaneEarnings(0.65f * amount * (1 - result), 0.9f * amount * (1 - result));
+			break;
+		case SUPPORT:
+			char1->LaneEarnings(0.65f * amount * result, 0.1f * amount * result);
+			char2->LaneEarnings(0.65f * amount * (1 - result), 0.1f * amount * (1 - result));
+			break;
+		}
+
+		for (float i = 0.f; i < 0.4f; i += 0.1f)
+		{
+			if (result >= 1.f - i)
+				char1->Kill(char2);
+			else if (result <= i)
+				char2->Kill(char1);
+		}
+	}
+}
+
+void match::MakeRotations(float scale)
+{
+	for (size_t iteam = 0; iteam < 2; ++iteam)
+	{
+		for (size_t ichar = 0; ichar < 5; ++ichar)
+		{
+			short ganks = 0;
+			auto char_ptr = teams[iteam]->GetCharacter(ichar);
+			switch (Role(ichar))
+			{
+			case OFFLANE:
+			case SUPPORT:
+				ganks = std::max<short>(0, (short)MultiRand(-1.f, 2.f, 2));
+				break;
+			case MIDLANE:
+				ganks = std::max<short>(0, (short)MultiRand(0.f, 3.f, 2));
+				break;
+			case JUNGLE:
+				ganks = std::max<short>(0, (short)MultiRand(0.f, 4.f, 2));
+				break;
+			case CARRY:
+				ganks = std::max<short>(0, (short)MultiRand(0.f, 1.f, 2));
+				break;
+			}
+			ganks = short(scale * ganks * char_ptr->GetPower() * 5.f);
+			for (short i = 0; i < ganks; ++i)
+				events::Rotation(char_ptr, teams[iteam].get(), teams[1 - iteam].get());
+
+			if (MultiRand(0.f, 1.f) - char_ptr->GetPower() < 0.05f)
+				events::SplitPush(char_ptr, teams[iteam].get(), teams[1 - iteam].get());
+		}
+		if (MultiRand(0.f, 1.f) < 0.05f)
+			events::ObjectiveContest(teams[iteam].get(), teams[1 - iteam].get());
 	}
 }
